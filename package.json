@@ -1,0 +1,22 @@
+{
+  "name": "pagination-backend",
+  "version": "1.0.0",
+  "description": "Backend API",
+  "main": "./src/server.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "dev": "nodemon ./src/server.js"
+  },
+  "keywords": [],
+  "author": "Yasir",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.10",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
+    "mongoose": "^8.1.1",
+    "mongoose-aggregate-paginate-v2": "^1.0.7"
+  }
+}
