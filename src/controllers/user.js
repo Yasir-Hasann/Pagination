@@ -55,7 +55,7 @@ exports.getData2 = asyncHandler(async (req, res, next) => {
   } else querySort.createdAt = sort;
 
   // const data = await UserModel.find(query).collation({ locale: 'en' }).sort({[sortKey || 'createdAt']: sort}).skip((page - 1) * limit).limit(limit);
-  const data = await UserModel.find(query).sort(querySort).collation({ locale: 'en' }).skip((page - 1) * limit).limit(limit);
+  const data = await UserModel.find(query).sort(querySort).collation({ locale: 'en', strength: 2 }).skip((page - 1) * limit).limit(limit);
   const totalCount = await UserModel.countDocuments(query);
   const totalPages = Math.ceil(totalCount / limit);
   if (!data) return next(new ErrorResponse('No data found', 404));
@@ -114,7 +114,7 @@ exports.getData3 = asyncHandler(async (req, res, next) => {
         data: 1,
       },
     },
-  ]).collation({ locale: "en" });
+  ]).collation({ locale: 'en', strength: 2 });
 
   if (!data) return next(new ErrorResponse('No data found', 404));
 
