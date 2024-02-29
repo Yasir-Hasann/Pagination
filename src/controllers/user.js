@@ -97,7 +97,7 @@ exports.getData3 = asyncHandler(async (req, res, next) => {
 
   if (search) query.unshift({ $match: { [searchKey || 'email']: { $regex: `.*${search}.*`, $options: 'i' } } });
 
-  const data = await UserModel.aggregate([
+  const [result] = await UserModel.aggregate([
     ...query,
     { $sort: { [sortKey || 'createdAt']: sort } },
     {
@@ -114,11 +114,10 @@ exports.getData3 = asyncHandler(async (req, res, next) => {
         data: 1,
       },
     },
-  ]).collation({ locale: 'en', strength: 2 });
+  ]);
 
-  if (!data) return next(new ErrorResponse('No data found', 404));
-
-  res.status(200).json({ data: data[0].data, totalCount: data[0].totalCount, totalPages: data[0].totalPages, limit, page });
+ // res.status(200).json({ data: data[0].data, totalCount: data[0].totalCount, totalPages: data[0].totalPages, limit, page });
+  res.status(200).json({ data: [], totalCount: 0, totalPages: 0, ...result });
 });
 
 
@@ -178,7 +177,7 @@ exports.getData4 = asyncHandler(async (req, res, next) => {
     sort: { [sortKey || 'createdAt']: sort },
   });
 
-  if (!data) return next(new ErrorResponse('No data found', 404));
+  if (!data) return res.status(200).json({});
 
   return res.status(200).json(data);
 });
