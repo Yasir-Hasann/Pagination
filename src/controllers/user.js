@@ -177,7 +177,7 @@ exports.getData4 = asyncHandler(async (req, res, next) => {
     sort: { [sortKey || 'createdAt']: sort },
   });
 
-  if (!data) return res.status(200).json({});
+  if (!data) return next(new ErrorResponse('No data found', 404));  // or return res.status(200).json({});
 
   return res.status(200).json(data);
 });
