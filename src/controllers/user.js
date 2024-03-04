@@ -97,7 +97,7 @@ exports.getData3 = asyncHandler(async (req, res, next) => {
 
   if (search) query.unshift({ $match: { [searchKey || 'email']: { $regex: `.*${search}.*`, $options: 'i' } } });
 
-  const [result] = await UserModel.aggregate([
+  const [result] = await UserModel.aggregate([       // const result
     ...query,
     { $sort: { [sortKey || 'createdAt']: sort } },
     {
