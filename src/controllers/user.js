@@ -171,6 +171,8 @@ exports.getData4 = asyncHandler(async (req, res, next) => {
 
   const aggregate = UserModel.aggregate(query);
 
+  // if (search) aggregate.match({ [searchKey || 'email']: { $regex: `.*${search}.*`, $options: 'i' } });
+  
   const data = await UserModel.aggregatePaginate(aggregate, {
     page,
     limit,
