@@ -1,3 +1,4 @@
+// module imports
 const mongoose = require('mongoose');
 const aggregatePaginate = require('mongoose-aggregate-paginate-v2');
 
@@ -12,7 +13,7 @@ const UserSchema = new mongoose.Schema(
     status: { type: String, enum: ['alive', 'dead', 'deceased', 'lifeless', 'no more'] },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 
