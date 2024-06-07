@@ -1,8 +1,10 @@
+// module imports
 const asyncHandler = require('express-async-handler');
 const dayjs = require('dayjs');
+
+// file imports
 const UserModel = require('../models/user');
 const ErrorResponse = require('../utils/error-response');
-
 
 // @desc   Get Data (without pagination and filtering)
 // @route  GET /api/v1/user/1
@@ -55,7 +57,11 @@ exports.getData2 = asyncHandler(async (req, res, next) => {
   } else querySort.createdAt = sort;
 
   // const data = await UserModel.find(query).collation({ locale: 'en' }).sort({[sortKey || 'createdAt']: sort}).skip((page - 1) * limit).limit(limit);
-  const data = await UserModel.find(query).sort(querySort).collation({ locale: 'en', strength: 2 }).skip((page - 1) * limit).limit(limit);
+  const data = await UserModel.find(query)
+    .sort(querySort)
+    .collation({ locale: 'en', strength: 2 })
+    .skip((page - 1) * limit)
+    .limit(limit);
   const totalCount = await UserModel.countDocuments(query);
   const totalPages = Math.ceil(totalCount / limit);
   if (!data) return next(new ErrorResponse('No data found', 404));
@@ -97,29 +103,29 @@ exports.getData3 = asyncHandler(async (req, res, next) => {
 
   if (search) query.unshift({ $match: { [searchKey || 'email']: { $regex: `.*${search}.*`, $options: 'i' } } });
 
-  const [result] = await UserModel.aggregate([       // const result
+  const [result] = await UserModel.aggregate([
+    // const result
     ...query,
     { $sort: { [sortKey || 'createdAt']: sort } },
     {
       $facet: {
-        totalCount: [{ $count: "totalCount" }],
+        totalCount: [{ $count: 'totalCount' }],
         data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
       },
     },
-    { $unwind: "$totalCount" },
+    { $unwind: '$totalCount' },
     {
       $project: {
-        totalCount: "$totalCount.totalCount",
-        totalPages: { $ceil: { $divide: ["$totalCount.totalCount", limit] } },
+        totalCount: '$totalCount.totalCount',
+        totalPages: { $ceil: { $divide: ['$totalCount.totalCount', limit] } },
         data: 1,
       },
     },
   ]);
 
- // res.status(200).json({ data: data[0].data, totalCount: data[0].totalCount, totalPages: data[0].totalPages, limit, page });
+  // res.status(200).json({ data: data[0].data, totalCount: data[0].totalCount, totalPages: data[0].totalPages, limit, page });
   res.status(200).json({ data: [], totalCount: 0, totalPages: 0, ...result });
 });
-
 
 // @desc   Get Data (pagination and filtering using aggregatePaginate)
 // @route  GET /api/v1/user/4
@@ -156,7 +162,7 @@ exports.getData4 = asyncHandler(async (req, res, next) => {
   if (fromDate && toDate) {
     const startOf = dayjs(fromDate, 'YYYY-MM-DD').startOf('day').toDate();
     const endOf = dayjs(toDate, 'YYYY-MM-DD').startOf('day').toDate();
-    query.unshift({ $match: { createdAt: { $gt: startOf, $lte: endOf } } })
+    query.unshift({ $match: { createdAt: { $gt: startOf, $lte: endOf } } });
   }
 
   if (createdAgo) query.unshift({ $match: { createdAt: { $gt: dayjs().subtract(createdAgo, 'days').startOf('day').toDate() } } });
@@ -172,14 +178,14 @@ exports.getData4 = asyncHandler(async (req, res, next) => {
   const aggregate = UserModel.aggregate(query);
 
   // if (search) aggregate.match({ [searchKey || 'email']: { $regex: `.*${search}.*`, $options: 'i' } });
-  
+
   const data = await UserModel.aggregatePaginate(aggregate, {
     page,
     limit,
     sort: { [sortKey || 'createdAt']: sort },
   });
 
-  if (!data) return next(new ErrorResponse('No data found', 404));  // or return res.status(200).json({});
+  if (!data) return next(new ErrorResponse('No data found', 404)); // or return res.status(200).json({});
 
   return res.status(200).json(data);
 });

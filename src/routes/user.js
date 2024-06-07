@@ -1,6 +1,10 @@
+// module imports
 const express = require('express');
+
+// file imports
 const { getData1, getData2, getData3, getData4, setData } = require('../controllers/user');
 
+// variable initializations
 const router = express.Router();
 
 router.get('/1', getData1);
